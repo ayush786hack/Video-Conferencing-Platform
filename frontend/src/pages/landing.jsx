@@ -83,7 +83,19 @@ export default function Landing() {
   </div>
 
 </nav>
+<div className="landingMainContainer">
+  <div>
+    <h1>Connect with your Love Ones</h1>
+    <p>Cover a distance By XYZ Video call</p>
 
+  <div role="button" className="getStartedButton">
+      <Link to={"/auth"}>Get Started</Link>
+  </div>
+  </div>
+  <div>
+    <img src="" alt="landing" />
+  </div>
+</div>
      
     </div>
   );
