@@ -1,232 +1,259 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Divider from '@mui/material/Divider';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import MuiCard from '@mui/material/Card';
-import { styled } from '@mui/material/styles';
-import ForgotPassword from './components/ForgotPassword';
-import AppTheme from '../shared-theme/AppTheme';
-import ColorModeSelect from '../shared-theme/ColorModeSelect';
-import { GoogleIcon, FacebookIcon, SitemarkIcon } from './components/CustomIcons';
+import React, { useState } from 'react'
+import { Link } from 'react-router-dom';
+import "./authentication.css"
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
+export default function Authentication() {
+  const [mode, setMode] = useState("login"); // "login" | "register"
+   const [username, setUsername] = useState("");
 
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignSelf: 'center',
-  width: '100%',
-  padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  margin: 'auto',
-  [theme.breakpoints.up('sm')]: {
-    maxWidth: '450px',
-  },
-  boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  ...theme.applyStyles('dark', {
-    boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-  }),
-}));
 
-const SignInContainer = styled(Stack)(({ theme }) => ({
-  height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
-  minHeight: '100%',
-  padding: theme.spacing(2),
-  [theme.breakpoints.up('sm')]: {
-    padding: theme.spacing(4),
-  },
-  '&::before': {
-    content: '""',
-    display: 'block',
-    position: 'absolute',
-    zIndex: -1,
-    inset: 0,
-    backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    ...theme.applyStyles('dark', {
-      backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-    }),
-  },
-}));
+  const[messages,setMessages] = useState([]);
+  const [loginData, setLoginData] = useState({ username: "", password: "" });
+  const [registerData, setRegisterData] = useState({
+    name: "", username: "", password: "", confirmPassword: ""
+  });
+  const [error, setError] = useState("");
 
-export default function Authentication(props) {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleLoginChange = (e) => {
+    setLoginData({ ...loginData, [e.target.name]: e.target.value });
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleRegisterChange = (e) => {
+    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (event) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
+  const [open, setOpen] = useState(false);
+
+    const {handleLogin, handleRegister} = useContext(AuthContext);
+   let handleAuth =async()=>{
+    try{
+      if(mode==="login"){
+        let result =await handleLogin(loginData.username,loginData.password);
+        setMessages([...messages, result]);
+        setOpen(true);
+      }
+      if(mode==="register"){
+        let result =await handleRegister(registerData.name,registerData.username,registerData.password);
+        setMessages([...messages, result]);
+        setOpen(true);
+
+      }
+    }catch(error){
+      console.error("Authentication error:", error);
+      setError(error.message);
     }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+   }
 
-  const validateInputs = () => {
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
-    }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-
-    return isValid;
+  const switchMode = (next) => {
+    setError("");
+    setMode(next);
   };
 
   return (
-    <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <SignInContainer direction="column" sx={{ justifyContent: 'space-between' }}>
-        <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
-        <Card variant="outlined">
-          <SitemarkIcon />
-          <Typography
-            component="h1"
-            variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-          >
-            Sign in
-          </Typography>
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
-              gap: 2,
-            }}
-          >
-            <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <TextField
-                error={emailError}
-                helperText={emailErrorMessage}
-                id="email"
-                type="email"
-                name="email"
-                placeholder="your@email.com"
-                autoComplete="email"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={emailError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="password"
-                placeholder="••••••"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={passwordError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <ForgotPassword open={open} handleClose={handleClose} />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={validateInputs}
-            >
-              Sign in
-            </Button>
-            <Link
-              component="button"
-              type="button"
-              onClick={handleClickOpen}
-              variant="body2"
-              sx={{ alignSelf: 'center' }}
-            >
-              Forgot your password?
-            </Link>
-          </Box>
-          <Divider>or</Divider>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Google')}
-              startIcon={<GoogleIcon />}
-            >
-              Sign in with Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign in with Facebook')}
-              startIcon={<FacebookIcon />}
-            >
-              Sign in with Facebook
-            </Button>
-            <Typography sx={{ textAlign: 'center' }}>
-              Don&apos;t have an account?{' '}
-              <Link
-                href="/material-ui/getting-started/templates/sign-in/"
-                variant="body2"
-                sx={{ alignSelf: 'center' }}
+    <div className="authPageContainer relative w-screen min-h-screen z-0 overflow-hidden">
+
+      {/* Ambient signature element, quieter than on the landing page */}
+      <div className="constellation" aria-hidden="true">
+        <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+          <line className="link" x1="120" y1="620" x2="380" y2="480" />
+          <line className="link" x1="380" y1="480" x2="700" y2="560" />
+          <line className="link" x1="700" y1="560" x2="980" y2="420" />
+          <line className="link" x1="980" y1="420" x2="1120" y2="220" />
+          <line className="link" x1="380" y1="480" x2="250" y2="280" />
+          <circle className="node coral" cx="120" cy="620" r="3" />
+          <circle className="node" cx="380" cy="480" r="2.6" />
+          <circle className="node" cx="700" cy="560" r="3" />
+          <circle className="node coral" cx="980" cy="420" r="2.6" />
+          <circle className="node" cx="1120" cy="220" r="2.8" />
+          <circle className="node" cx="250" cy="280" r="2.4" />
+        </svg>
+      </div>
+
+      <Link to="/" className="authBrand">
+        <div className="brand-mark">🎥</div>
+        <span className="brand-name">XYZ Video Call</span>
+      </Link>
+
+      <div className="authLayout">
+
+        {/* Left: brand / pitch pane */}
+        <div className="authPitch">
+          <div className="eyebrow">Face to face, from anywhere</div>
+          <h1 className="pitch-headline">
+            One link is all<br />it takes to feel<br /><em>in the room</em>
+          </h1>
+          <p className="pitch-sub">
+            Sign in to pick up where you left off, or create an account
+            to start your first call in under a minute.
+          </p>
+
+          <div className="pitch-points">
+            <div className="pitch-point">
+              <span className="pitch-dot" />
+              No app required — works in the browser
+            </div>
+            <div className="pitch-point">
+              <span className="pitch-dot" />
+              Calls stay private, end to end
+            </div>
+            <div className="pitch-point">
+              <span className="pitch-dot" />
+              Free for calls with friends and family
+            </div>
+          </div>
+        </div>
+
+        {/* Right: auth card */}
+        <div className="authCardWrap">
+          <div className="authCard">
+
+            <div className="authTabs" role="tablist" aria-label="Authentication mode">
+              <button
+                role="tab"
+                aria-selected={mode === "login"}
+                className={`authTab ${mode === "login" ? "active" : ""}`}
+                onClick={() => switchMode("login")}
+              >
+                Log in
+              </button>
+              <button
+                role="tab"
+                aria-selected={mode === "register"}
+                className={`authTab ${mode === "register" ? "active" : ""}`}
+                onClick={() => switchMode("register")}
               >
                 Sign up
-              </Link>
-            </Typography>
-          </Box>
-        </Card>
-      </SignInContainer>
-    </AppTheme>
+              </button>
+              <span className={`authTabIndicator ${mode === "register" ? "right" : ""}`} />
+            </div>
+
+            {error && <div className="authError" role="alert">{error}</div>}
+
+            {mode === "login" ? (
+              <form className="authForm">
+                <h2 className="authFormTitle">Welcome back</h2>
+                <p className="authFormSub">Log in to jump back into your calls.</p>
+
+                <label className="authField">
+                  <span>Username</span>
+                  <input
+                    type="text"
+                    name="username"
+                    autoComplete="username"
+                    placeholder="Enter your username"
+                    value={loginData.username}
+                    onChange={handleLoginChange}
+                    required
+                  />
+                </label>
+
+                <label className="authField">
+                  <span>Password</span>
+                  <input
+                    type="password"
+                    name="password"
+                    autoComplete="current-password"
+                    placeholder="Enter your password"
+                    value={loginData.password}
+                    onChange={handleLoginChange}
+                    required
+                  />
+                </label>
+
+                <div className="authFieldRow">
+                  <label className="authCheckbox">
+                    <input type="checkbox" />
+                    <span>Remember me</span>
+                  </label>
+                  <a href="#forgot" className="authLink">Forgot password?</a>
+                </div>
+
+                <button type="submit" className="authSubmit">Log in</button>
+
+                <button type="button" className="authGuest">
+                  Continue as guest
+                </button>
+
+                <p className="authSwitchText">
+                  New here?{" "}
+                  <button type="button" className="authSwitchLink" onClick={() => switchMode("register")}>
+                    Create an account
+                  </button>
+                </p>
+              </form>
+            ) : (
+              <form className="authForm" >
+                <h2 className="authFormTitle">Create your account</h2>
+                <p className="authFormSub">Set up your account to start calling.</p>
+
+                <label className="authField">
+                  <span>Name</span>
+                  <input
+                    type="text"
+                    name="name"
+                    autoComplete="name"
+                    placeholder="Your full name"
+                    value={registerData.name}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                </label>
+
+                <label className="authField">
+                  <span>Username</span>
+                  <input
+                    type="text"
+                    name="username"
+                    autoComplete="username"
+                    placeholder="Enter your username"
+                    value={registerData.username}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                </label>
+
+                <label className="authField">
+                  <span>Password</span>
+                  <input
+                    type="password"
+                    name="password"
+                    autoComplete="new-password"
+                    placeholder="Create a password"
+                    value={registerData.password}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                </label>
+
+                <label className="authField">
+                  <span>Confirm password</span>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    autoComplete="new-password"
+                    placeholder="Re-enter your password"
+                    value={registerData.confirmPassword}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                </label>
+
+                <button type="submit" className="authSubmit">Create account</button>
+
+                <p className="authSwitchText">
+                  Already have an account?{" "}
+                  <button type="button" className="authSwitchLink" onClick={() => switchMode("login")}>
+                    Log in
+                  </button>
+                </p>
+              </form>
+            )}
+
+          </div>
+        </div>
+
+      </div>
+    </div>
   );
 }
