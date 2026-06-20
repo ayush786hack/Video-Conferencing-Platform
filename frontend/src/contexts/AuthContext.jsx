@@ -3,11 +3,13 @@ import {createContext} from "react";
 import {useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import httpStatus from "http-status";
+
 export const AuthContext =createContext({});
 
 
 const client =axios.create({
-    baseURL:"localhost:8000/api/v1/users",
+    baseURL:"http://localhost:8000/api/v1/users",
 
 })
 
@@ -26,15 +28,13 @@ export const AuthProvider =({children})=>{
                 return request.data.message;
             }
         }catch(error){
-            console.error("Registration error:", error);
-            throw new Error("Failed to register. Please try again.");
-        }
+   throw new Error(
+      error.response?.data?.message ||
+      "Registration failed"
+   );
+}
     }
      
-
-
-
-
     const handleLogin=async(username,password)=>{
         try{
             let request =await client.post("/login",{
@@ -43,11 +43,16 @@ export const AuthProvider =({children})=>{
             })
             if(request.status ===httpStatus.OK){
                 localStorage.setItem("token",request.data.token);
+                router("/home");
                 return request.data.message;
             }
         }catch(error){
             console.error("Login error:", error);
-            throw new Error("Failed to login. Please try again.");
+             throw new Error(
+      error.response?.data?.message ||
+   
+      "Login failed"
+   );
         }
     }
 

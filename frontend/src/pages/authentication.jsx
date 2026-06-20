@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import "./authentication.css"
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 export default function Authentication() {
   const [mode, setMode] = useState("login"); // "login" | "register"
    const [username, setUsername] = useState("");
@@ -22,6 +24,9 @@ export default function Authentication() {
   const handleRegisterChange = (e) => {
     setRegisterData({ ...registerData, [e.target.name]: e.target.value });
   };
+  const handleClose = () => {
+  setOpen(false);
+};
 
   const [open, setOpen] = useState(false);
 
@@ -35,14 +40,26 @@ export default function Authentication() {
       }
       if(mode==="register"){
         let result =await handleRegister(registerData.name,registerData.username,registerData.password);
+        if (registerData.password !== registerData.confirmPassword) {
+          throw new Error("Passwords do not match");
+        }
+      
         setMessages([...messages, result]);
         setOpen(true);
 
       }
     }catch(error){
-      console.error("Authentication error:", error);
-      setError(error.message);
+  console.error("Authentication error:", error);
+
+  setMessages([
+    {
+      success: false,
+      message: error.message,
     }
+  ]);
+
+  setOpen(true);
+}
    }
 
   const switchMode = (next) => {
@@ -169,7 +186,10 @@ export default function Authentication() {
                   <a href="#forgot" className="authLink">Forgot password?</a>
                 </div>
 
-                <button type="submit" className="authSubmit">Log in</button>
+                <button type="submit" className="authSubmit" onClick={(e) => {
+    e.preventDefault();
+    handleAuth();
+  }}>Log in</button>
 
                 <button type="button" className="authGuest">
                   Continue as guest
@@ -239,7 +259,12 @@ export default function Authentication() {
                   />
                 </label>
 
-                <button type="submit" className="authSubmit">Create account</button>
+                <button type="submit" className="authSubmit"  onClick={(e) => {
+    e.preventDefault();
+    handleAuth();
+  }}>
+                  Create account
+                </button>
 
                 <p className="authSwitchText">
                   Already have an account?{" "}
@@ -254,6 +279,26 @@ export default function Authentication() {
         </div>
 
       </div>
+    <Snackbar
+  open={open}
+  autoHideDuration={5000}
+  onClose={handleClose}
+  anchorOrigin={{ vertical: "top", horizontal: "right" }}
+>
+  <Alert
+    onClose={handleClose}
+    severity={
+      messages[messages.length - 1]?.success ? "success" : "error"
+    }
+    variant="filled"
+    sx={{ width: "100%" }}
+  >
+    {messages[messages.length - 1]?.message ||
+      messages[messages.length - 1] ||
+      "Operation completed"}
+  </Alert>
+</Snackbar>
+    
     </div>
   );
 }
