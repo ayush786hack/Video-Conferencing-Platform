@@ -18,15 +18,20 @@ const login = async (req, res) => {
         .status(httpStatus.NOT_FOUND)
         .json({ message: "User not found" });
     }
-    if( bcrypt.compare(password, user.password)){
+    let isPasswordValid = await bcrypt.compare(password, user.password);
+    if(isPasswordValid){
         let token =crypto.randomBytes(20).toString('hex');
         user.token=token;
         await user.save();
      return res
      .status(httpStatus.OK)
      .json({ message: "Login successful", token: token });
-    }
-    
+    }else
+      {
+        return res
+          .status(httpStatus.UNAUTHORIZED)
+          .json({ message: "Invalid credentials" });
+      }
   } catch (error) {
     return res
       .status(httpStatus.INTERNAL_SERVER_ERROR)
