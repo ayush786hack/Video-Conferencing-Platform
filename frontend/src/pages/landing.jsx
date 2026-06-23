@@ -2,8 +2,9 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 // import Lightfall from '../component/Lightfall';
 import "./landing.css"
-
+import {navigate} from "react-router-dom";
 export default function Landing() {
+  const navigate = useNavigate();
   return (
     <div className="landingPageContainer relative w-screen min-h-screen z-0 overflow-hidden">
      
@@ -44,15 +45,15 @@ export default function Landing() {
 
           {/* Nav Links */}
           <div className="nav-links flex items-center gap-2">
-            <button className="btn-ghost">
+            <button className="btn-ghost" onClick={() => navigate("/dsjkfsnfj")}>
               Join as guest
             </button>
 
-            <button className="btn-outline" onClick={() => window.location.href = "/auth"}>
+            <button className="btn-outline" onClick={() => navigate("/auth")}>
               Log in
             </button>
 
-            <button className="btn-solid" onClick={() => window.location.href = "/auth"}>
+            <button className="btn-solid" onClick={() => navigate("/auth")}>
               Sign up
             </button>
           </div>

@@ -381,7 +381,7 @@ export default function VideoMeet() {
     Object.values(connections.current).forEach((conn) => conn.close());
     connections.current = {};
     socketRef.current?.disconnect();
-    window.location.href = "/";
+    window.location.href = "/home";
   };
 
   const initials = username.trim().slice(0, 1).toUpperCase() || "?";
