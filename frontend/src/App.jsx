@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import Landing from './pages/landing.jsx';
 import Authentication from './pages/authentication.jsx';
-import VideoMeet from './pages/videoMeet.jsx';
+import VideoMeet from './pages/VideoMeet.jsx';
 import Home from './pages/home.jsx';
 import History from './pages/history.jsx';
 import { Routes,Route} from "react-router-dom";
