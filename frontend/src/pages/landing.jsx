@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 // import Lightfall from '../component/Lightfall';
 import "./landing.css"
-import {navigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 export default function Landing() {
   const navigate = useNavigate();
   return (
