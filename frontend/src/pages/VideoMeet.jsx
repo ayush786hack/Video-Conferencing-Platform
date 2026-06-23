@@ -397,7 +397,7 @@ export default function VideoMeet() {
         <header style={styles.header}>
           <div style={styles.brand}>
             <div style={styles.brandIcon}>🎥</div>
-            <span style={styles.brandName}>XYZ Video Call</span>
+            <span style={styles.brandName}>SYNCHORA Video Call</span>
           </div>
         </header>
 

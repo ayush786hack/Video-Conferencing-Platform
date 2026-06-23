@@ -67,7 +67,7 @@ function History() {
       <header style={styles.navBar}>
         <div style={styles.brand} onClick={() => navigate("/home")} role="button">
           <div style={styles.brandIcon}>🎥</div>
-          <span style={styles.brandName}>XYZ Video Call</span>
+          <span style={styles.brandName}>SYNCHORA Video Call</span>
         </div>
 
         <button style={styles.navOutlineBtn} onClick={() => navigate("/home")}>

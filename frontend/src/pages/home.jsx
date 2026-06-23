@@ -28,7 +28,7 @@ function Home() {
       <header style={styles.navBar}>
         <div style={styles.brand}>
           <div style={styles.brandIcon}>🎥</div>
-          <span style={styles.brandName}>XYZ Video Call</span>
+          <span style={styles.brandName}>SYNCHORA Video Call</span>
         </div>
 
         <nav style={styles.navLinks}>

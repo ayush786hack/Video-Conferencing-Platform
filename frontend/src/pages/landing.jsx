@@ -39,7 +39,7 @@ export default function Landing() {
               🎥
             </div>
             <h1 className="brand-name">
-              XYZ Video Call
+              SYNCHORA Video Call
             </h1>
           </div>
 
