@@ -1,11 +1,7 @@
-let IS_PROD = true
+const IS_PROD = true;
 
-const server =IS_PROD ? 
-
-    "https://github.com/ayush786hack/Synchora":
-    "http://localhost:8000",
-   
-
-
+const server = IS_PROD
+  ? "https://synchorabackend.onrender.com"
+  : "http://localhost:8000";
 
 export default server;
