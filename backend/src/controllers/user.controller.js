@@ -99,7 +99,7 @@ const addToHistory = async (req, res) => {
       meetingCode: meetingCode,
     });
     await newMeeting.save();
-   
+    user.history.push(newMeeting._id); 
     await user.save();
 
     return res
