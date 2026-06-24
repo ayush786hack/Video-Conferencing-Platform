@@ -99,6 +99,7 @@ const connectToSocket = (server) => {
       }
     });
   });
+  return io;
 };
 
 export default connectToSocket;
